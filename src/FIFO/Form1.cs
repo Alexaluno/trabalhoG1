@@ -1,18 +1,18 @@
-﻿using FIFO.Interfaces;
+﻿using Algoritmos.Interfaces;
 using System;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace FIFO
+namespace Algoritmos
 {
     public partial class Form1 : Form
     {
-        private readonly IFIFOContext contexto;
+        private readonly IAlgoritmoContext contexto;
         public Form1()
         {
             InitializeComponent();
-            contexto = new FIFOContext();
-            
+            contexto = new AlgoritmoContext();
+            dtProcesso.DataSource = null;
         }
 
         private void Button2_Click(object sender, EventArgs e)
@@ -35,7 +35,7 @@ namespace FIFO
 
         private void CriarProcesso(int numeroProcesso, int tempoProcesso)
         {
-            var processo = new FIFO(numeroProcesso, tempoProcesso);
+            var processo = new Algoritmo(numeroProcesso, tempoProcesso);
 
             if (!processo.EhValido())
             {
@@ -45,7 +45,14 @@ namespace FIFO
                 
 
             contexto.AdicionarProcesso(processo);
-   
+
+
+            dtProcesso.AutoGenerateColumns = false;           
+            int rowId = dtProcesso.Rows.Add();
+            DataGridViewRow row = dtProcesso.Rows[rowId];
+            row.Cells[0].Value = numeroProcesso;
+            row.Cells[1].Value = tempoProcesso;          
+
         }
 
         private void Panel1_Paint(object sender, PaintEventArgs e)
@@ -55,15 +62,6 @@ namespace FIFO
 
         private void Button3_Click(object sender, EventArgs e)
         {
-            var lista = contexto.BuscarProcessos().ToList();
-            dtProcesso.DataSource = null;
-
-            BindingSource binding = new BindingSource();
-            binding.DataSource = lista;
-
-            dtProcesso.AutoGenerateColumns = false;
-            dtProcesso.AutoSize = true;
-            dtProcesso.DataSource = binding;
 
             GerarGraficoDeProcesso();
         }
@@ -95,8 +93,17 @@ namespace FIFO
             //TODO IMPLEMTAR LOGICA            
         }
 
-        private static void ProcessarFIFO()
+        private void ProcessarFIFO()
         {
+            dgGrafico.AutoGenerateColumns = false;          
+
+           
+            var listaProcesso = contexto.BuscarProcessos();
+
+            foreach (var item in listaProcesso)
+            {
+                             
+            }
            //TODO IMPLEMTAR LOGICA
         }
     }

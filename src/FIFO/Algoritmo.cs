@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FIFO
+namespace Algoritmos
 {
-    public class FIFO : Processo
+    public class Algoritmo : Processo
     {
-        public FIFO(
+        public Algoritmo(
             int numero,
             int tempoProcesso) : base(numero, tempoProcesso)
         {

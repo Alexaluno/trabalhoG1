@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace FIFO
+namespace Algoritmos
 {
     public abstract class Processo : IProcesso
     {
@@ -12,8 +12,8 @@ namespace FIFO
         }
 
         protected Dictionary<string, string> Mensagem { get; set; }
-        protected int Numero { get; set; }
-        protected int TempoProcesso { get; set; }
+        public int Numero { get; set; }
+        public int TempoProcesso { get; set; }
 
         public void ValidarProcesso(string nomeAtributo, string valorAtribuito)
         {

@@ -1,4 +1,4 @@
-﻿namespace FIFO
+﻿namespace Algoritmos
 {
     public interface IProcesso
     {
