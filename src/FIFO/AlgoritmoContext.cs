@@ -10,9 +10,9 @@ namespace Algoritmos
         {
             _repository = new List<Algoritmo>();
         }
-        public void AdicionarProcesso(Algoritmo fifo)
+        public void AdicionarProcesso(Algoritmo algoritmo)
         {
-            _repository.Add(fifo);
+            _repository.Add(algoritmo);
         }
 
         public ICollection<Algoritmo> BuscarProcessos()

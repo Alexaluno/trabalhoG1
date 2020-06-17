@@ -9,8 +9,10 @@ namespace Algoritmos
     public class Algoritmo : Processo
     {
         public Algoritmo(
-            int numero,
-            int tempoProcesso) : base(numero, tempoProcesso)
+            int numero, 
+            int tempoProcesso, 
+            int inicioProcesso, 
+            int fimProcosso) : base( numero, tempoProcesso, inicioProcesso, fimProcosso)
         {
             if (Numero <= 0)
                 Mensagem.Add("O numero ", $"{ Numero } do processo não pode ser negativo");
@@ -25,7 +27,6 @@ namespace Algoritmos
                 Mensagem.Add("O Tempo ", $"{ TempoProcesso } do processo não pode ser maior que 80");
 
         }
-
 
         public override bool EhValido()
         {
