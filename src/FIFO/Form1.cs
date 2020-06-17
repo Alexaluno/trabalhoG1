@@ -81,9 +81,7 @@ namespace Algoritmos
                 return;
             }
                 
-
             contexto.AdicionarProcesso(processo);
-
 
             dtProcesso.AutoGenerateColumns = false;           
             int rowId = dtProcesso.Rows.Add();
@@ -133,39 +131,30 @@ namespace Algoritmos
 
         private void ProcessarFIFO()
         {
-            dgGrafico.AutoGenerateColumns = false;          
-
-           
+            //TODO : IMPLEMTAR LOGICA
+            
             var listaProcesso = contexto.BuscarProcessos();
-
-
-            int indexProcesso = 0;
-
-            foreach (var processo in listaProcesso)
+            var totalDetempo = listaProcesso.Sum(processos => processos.TempoProcesso);
+            var totalDeProcesso = listaProcesso.Count();
+          
+            for (int column = 0; column < totalDetempo; column++)
             {
-                
-                for (int i = 0; i < processo.TempoProcesso; i++)
-                {
-                    dgGrafico.Columns.Add($"t{indexProcesso}", $"t{indexProcesso}");
-                   
-                }
-                dgGrafico.Rows.Add();
-                indexProcesso++;
-            }
-
-            int columnscount = dgGrafico.Columns.Count;
-
-            foreach (DataGridViewRow row in dgGrafico.Rows)
-            {
-                for (int j = 0; j < columnscount; j++)
-                {
-                    row.Cells[j].Value = "##";
-                }
-                
+                dgGrafico.Columns.Add($"t{column}", $"t{column}");
             }
            
-
-           //TODO IMPLEMTAR LOGICA
+            for (int rowIndex = 0; rowIndex < totalDeProcesso; rowIndex++)
+            {
+                var processo = listaProcesso.ElementAt<Algoritmo>(rowIndex);
+                dgGrafico.Rows.Add();
+                for (int columnIndex = 0; columnIndex < totalDetempo; columnIndex++)
+                {
+                    if (columnIndex >= processo.InicioProcesso && columnIndex < processo.FimProcosso)
+                    {
+                        dgGrafico.Rows[rowIndex].Cells[columnIndex].Value = "##";
+                        
+                    }
+                }
+            }
         }
     }
 }

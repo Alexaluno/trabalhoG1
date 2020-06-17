@@ -206,9 +206,12 @@
             // 
             // dgGrafico
             // 
+            this.dgGrafico.AllowUserToAddRows = false;
+            this.dgGrafico.AllowUserToDeleteRows = false;
             this.dgGrafico.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgGrafico.Location = new System.Drawing.Point(266, 85);
             this.dgGrafico.Name = "dgGrafico";
+            this.dgGrafico.ReadOnly = true;
             this.dgGrafico.Size = new System.Drawing.Size(611, 232);
             this.dgGrafico.TabIndex = 11;
             // 
