@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Algoritmos
@@ -120,14 +121,88 @@ namespace Algoritmos
                 case "SJF":
                     ProcessarSJF();
                     break;
+                case "RRobin":
+                    ProcessarRRobin();
+                    break;
                 default:                    
                     break;
             }
         }
 
+        private void ProcessarRRobin()
+        {
+            //TODO IMPLEMTAR LOGICA 
+            var quantum = 3;
+            //TODO : Tenho uma lista
+            //cada elemento da minha lista tem um tempo
+            //vou percorer o primeiro item da minha lista
+            //se o tempo for maior que o meu quantum eu subtraio o meu tempo do meu quantum e a difenrenca fica para um proximo procesamento
+
+            //TODO : IMPLEMTAR LOGICA
+            var novaLista = new List<Algoritmo>();
+
+            ResetDataGridView();
+
+            var listaProcesso = contexto.BuscarProcessos();
+            foreach (var item in listaProcesso)
+            {
+
+            }
+
+            var totalDetempo = listaProcesso.Sum(processos => processos.TempoProcesso);
+            var totalDeProcesso = listaProcesso.Count();
+             CriarDataGridView(totalDetempo, totalDeProcesso);
+            DesenharDataGridViewAsync(listaProcesso, totalDetempo, totalDeProcesso);
+        }
+
         private void ProcessarSJF()
         {
-            //TODO IMPLEMTAR LOGICA            
+            //TODO : IMPLEMTAR LOGICA
+            ResetDataGridView();
+
+
+            //TODO : Organiza processo
+            var listaProcesso = new List<Algoritmo>();
+            flagControle = 0;
+            inicioProcesso = 0;
+            fimProcesso = 0;
+            var listaOrdenada = contexto.BuscarProcessos().OrderBy(c => c.TempoProcesso).ToList();
+          
+            foreach (var item in listaOrdenada)
+            {
+                var numeroProcesso = item.Numero;
+                if (flagControle == 0)
+                {
+                    inicioProcesso = flagControle;
+                    fimProcesso = item.TempoProcesso;
+                    var processo = new Algoritmo(numeroProcesso,
+                                          item.TempoProcesso,
+                                          inicioProcesso,
+                                          fimProcesso);
+
+                    listaProcesso.Add(processo);
+                    flagControle= item.TempoProcesso;
+                }
+                else {
+
+                    inicioProcesso = flagControle;
+                    fimProcesso = item.TempoProcesso+ inicioProcesso;
+                    var processo = new Algoritmo(numeroProcesso,
+                                         item.TempoProcesso,
+                                         inicioProcesso,
+                                         fimProcesso);
+
+                    listaProcesso.Add(processo);
+                    flagControle = fimProcesso;
+                }
+              
+            }
+
+            var totalDetempo = listaProcesso.Sum(processos => processos.TempoProcesso);
+            var totalDeProcesso = listaProcesso.Count();
+
+            CriarDataGridView(totalDetempo, totalDeProcesso);
+            DesenharDataGridViewAsync(listaProcesso, totalDetempo, totalDeProcesso);
         }
 
         private void ProcessarFIFO()
@@ -140,10 +215,10 @@ namespace Algoritmos
             var totalDeProcesso = listaProcesso.Count();
 
             CriarDataGridView(totalDetempo, totalDeProcesso);
-            DesenharDataGridView(listaProcesso, totalDetempo, totalDeProcesso);
+            DesenharDataGridViewAsync(listaProcesso, totalDetempo, totalDeProcesso);
         }
 
-        private void DesenharDataGridView(ICollection<Algoritmo> listaProcesso, int totalDetempo, int totalDeProcesso)
+        private async Task DesenharDataGridViewAsync(ICollection<Algoritmo> listaProcesso, int totalDetempo, int totalDeProcesso)
         {
             for (int rowIndex = 0; rowIndex < totalDeProcesso; rowIndex++)
             {
@@ -155,7 +230,7 @@ namespace Algoritmos
                     {
                         dgGrafico.Rows[rowIndex].Cells[columnIndex].Value = "##";
                         dgGrafico.Rows[rowIndex].Cells[columnIndex].Style.BackColor = Color.LightGreen;
-
+                        await Task.Delay(2000);
                     }
                 }
             }
