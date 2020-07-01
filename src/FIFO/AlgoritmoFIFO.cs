@@ -20,5 +20,10 @@ namespace Algoritmos
         {
             return _repository;
         }
+
+        public void LimparProcessos()
+        {
+            _repository.Clear();
+        }
     }
 }

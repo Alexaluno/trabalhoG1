@@ -17,8 +17,7 @@ namespace Algoritmos
             if (Numero <= 0)
                 Mensagem.Add("O numero ", $"{ Numero } do processo não pode ser negativo");
 
-            if (Numero > 10)
-                Mensagem.Add("Numero ", $"{ Numero } não pode ser maior que 10");
+          
 
             if (TempoProcesso <= 0)
                 Mensagem.Add("O Tempo ", $"{ TempoProcesso } do processo não pode ser negativo");

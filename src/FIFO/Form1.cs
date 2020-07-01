@@ -31,13 +31,11 @@ namespace Algoritmos
             //TODO : TEMPO 80
             //FIFO : O PROCESSO É O QUE VAI RODA PRIMEIRO 
 
-            var maxProcesso = nProcesso.Maximum;
+            
             var maxTempo = nTempo.Maximum;
-
             var numeroProcesso = nProcesso.Value;
             var tempoProcesso = nTempo.Value;
-
-            nProcesso.Maximum = maxProcesso - numeroProcesso;
+                       
             nTempo.Maximum = maxTempo - tempoProcesso;
                     
 
@@ -62,7 +60,12 @@ namespace Algoritmos
                 fimProcesso);
             }
 
-              
+            nProcesso.Value++;
+            var maxProcesso = contexto.BuscarProcessos().Count();
+            if (maxProcesso == 10)
+            {
+                btnAdicionar.Enabled = false;
+            }
         }
 
         private void CriarProcesso(
@@ -132,7 +135,7 @@ namespace Algoritmos
         private void ProcessarRRobin()
         {
             //TODO IMPLEMTAR LOGICA 
-            var quantum = 3;
+            var quantum = (int)nQuantum.Value;
             //TODO : Tenho uma lista
             //cada elemento da minha lista tem um tempo
             //vou percorer o primeiro item da minha lista
@@ -141,24 +144,148 @@ namespace Algoritmos
             //TODO : IMPLEMTAR LOGICA
             var novaLista = new List<Algoritmo>();
 
-            ResetDataGridView();
+            ResetDataGridGraficoView();
 
-            var listaProcesso = contexto.BuscarProcessos();
-            foreach (var item in listaProcesso)
+            var listaProcesso = contexto.BuscarProcessos().ToArray();
+            var listaRRobin = new List<Algoritmo>();
+            var listaSobra = new List<Algoritmo>();
+            var listaTeste = new List<Algoritmo>();
+            flagControle = 0;
+            inicioProcesso = 0;
+            fimProcesso = 0;
+
+            var totalProcesso = listaProcesso.Count();
+            var controle = true;
+            do
             {
+
+                if (listaSobra.Count == 0) {
+                    foreach (var item in listaProcesso)
+                    {
+                        if (item.TempoProcesso <= quantum)
+                        {
+                            listaRRobin.Add(item);
+                        }
+                        else
+                        {
+
+                            var novoProcesso = new Algoritmo(item.Numero,
+                                                             quantum,
+                                                             item.InicioProcesso,
+                                                             item.FimProcesso);
+                            listaRRobin.Add(novoProcesso);
+
+                            var tempoNovo = item.TempoProcesso - quantum;
+                            var SobraProcesso = new Algoritmo(item.Numero,
+                                                               tempoNovo,
+                                                               item.InicioProcesso,
+                                                               item.FimProcesso);
+
+                            listaSobra.Add(SobraProcesso);
+                        }
+                    }
+                }
+               
+
+                if (listaSobra.Count > 0)
+                {
+                    for (int i = 0; i < listaSobra.Count; i++)
+                    {
+                        if (listaSobra[i].TempoProcesso <= quantum)
+                        {
+                            var novoProcesso = new Algoritmo(listaSobra[i].Numero,
+                                                            listaSobra[i].TempoProcesso,
+                                                            listaSobra[i].InicioProcesso,
+                                                            listaSobra[i].FimProcesso);
+
+                            listaTeste.Add(novoProcesso);
+                            listaSobra.RemoveAt(i);
+                        }
+                        else
+                        {
+
+                            var novoProcesso = new Algoritmo(listaSobra[i].Numero,
+                                                             quantum,
+                                                             listaSobra[i].InicioProcesso,
+                                                             listaSobra[i].FimProcesso);
+                            listaTeste.Add(novoProcesso);
+
+
+                            var tempoNovo = listaSobra[i].TempoProcesso - quantum;
+                            var SobraProcesso = new Algoritmo(listaSobra[i].Numero,
+                                                               tempoNovo,
+                                                               listaSobra[i].InicioProcesso,
+                                                               listaSobra[i].FimProcesso);
+                            listaSobra.RemoveAt(i);
+                            listaSobra.Add(SobraProcesso);
+                        }
+                    }
+                  
+                }
+                if(listaSobra.Count()==0)
+                {
+                    controle = false;
+                }
+                  
+
+            } while (controle);
+
+            var newInicio = 0;
+            var newFim = 0;
+            foreach (var item in listaTeste)
+            {
+                if (newInicio == 0)
+                {
+                    newFim = item.TempoProcesso + newInicio;
+                    item.InicioProcesso = newInicio;
+                    item.FimProcesso = newFim;
+                    newInicio = item.TempoProcesso;
+                }
+                else
+                {
+                    newInicio = newFim;
+                    newFim = item.TempoProcesso + newInicio;
+
+                    item.InicioProcesso = newInicio;
+                    item.FimProcesso = newFim;
+                }
 
             }
 
-            var totalDetempo = listaProcesso.Sum(processos => processos.TempoProcesso);
-            var totalDeProcesso = listaProcesso.Count();
-             CriarDataGridView(totalDetempo, totalDeProcesso);
-            DesenharDataGridViewAsync(listaProcesso, totalDetempo, totalDeProcesso);
+            newInicio = 0;
+            newFim = 0;
+
+            foreach (var item in listaRRobin)
+            {
+                if (newInicio == 0)
+                {
+                    newFim = item.TempoProcesso + newInicio;
+                    item.InicioProcesso = newInicio;
+                    item.FimProcesso = newFim;
+                    newInicio = item.TempoProcesso;
+                }
+                else
+                {
+                    newInicio = newFim;
+                    newFim = item.TempoProcesso + newInicio;
+
+                    item.InicioProcesso = newInicio;
+                    item.FimProcesso = newFim;
+                }
+
+            }
+
+            listaRRobin.AddRange(listaTeste);
+            var totalDetempo = listaRRobin.Sum(processos => processos.TempoProcesso);
+            var totalDeProcesso = listaRRobin.Count();
+            CriarDataGridView(totalDetempo, totalDeProcesso);
+            DesenharDataGridViewAsync(listaRRobin, totalDetempo, totalDeProcesso);
         }
 
         private void ProcessarSJF()
         {
             //TODO : IMPLEMTAR LOGICA
-            ResetDataGridView();
+            ResetDataGridGraficoView();
 
 
             //TODO : Organiza processo
@@ -170,12 +297,12 @@ namespace Algoritmos
           
             foreach (var item in listaOrdenada)
             {
-                var numeroProcesso = item.Numero;
+               
                 if (flagControle == 0)
                 {
                     inicioProcesso = flagControle;
                     fimProcesso = item.TempoProcesso;
-                    var processo = new Algoritmo(numeroProcesso,
+                    var processo = new Algoritmo(item.Numero,
                                           item.TempoProcesso,
                                           inicioProcesso,
                                           fimProcesso);
@@ -187,7 +314,7 @@ namespace Algoritmos
 
                     inicioProcesso = flagControle;
                     fimProcesso = item.TempoProcesso+ inicioProcesso;
-                    var processo = new Algoritmo(numeroProcesso,
+                    var processo = new Algoritmo(item.Numero,
                                          item.TempoProcesso,
                                          inicioProcesso,
                                          fimProcesso);
@@ -208,7 +335,7 @@ namespace Algoritmos
         private void ProcessarFIFO()
         {
             //TODO : IMPLEMTAR LOGICA
-            ResetDataGridView();
+            ResetDataGridGraficoView();
 
             var listaProcesso = contexto.BuscarProcessos();
             var totalDetempo = listaProcesso.Sum(processos => processos.TempoProcesso);
@@ -220,13 +347,38 @@ namespace Algoritmos
 
         private async Task DesenharDataGridViewAsync(ICollection<Algoritmo> listaProcesso, int totalDetempo, int totalDeProcesso)
         {
+            var contaGridProcesso = dtProcesso.RowCount;
+
             for (int rowIndex = 0; rowIndex < totalDeProcesso; rowIndex++)
             {
                 var processo = listaProcesso.ElementAt<Algoritmo>(rowIndex);
 
+                for (int Processo = 0; Processo < contaGridProcesso; Processo++)
+                {
+                    var numroProcessoExcucao = (int)dtProcesso.Rows[Processo].Cells[0].Value;
+                    if (numroProcessoExcucao == processo.Numero)
+                    {
+                        var corProcessamento = dtProcesso.Rows[Processo].Cells[2].Style.BackColor;
+                        if (corProcessamento == Color.LightGreen)
+                        {
+                            dtProcesso.Rows[Processo].Cells[2].Style.BackColor = Color.Yellow;
+                        }                           
+                        if(corProcessamento == Color.Yellow)
+                        {
+                            dtProcesso.Rows[Processo].Cells[2].Style.BackColor = Color.Red;
+                        }
+                        if(dtProcesso.Rows[Processo].Cells[2].Value != "YES")
+                        {
+                            dtProcesso.Rows[Processo].Cells[2].Value = "YES";
+                            dtProcesso.Rows[Processo].Cells[2].Style.BackColor = Color.LightGreen;
+                        }
+                        
+                    }
+                }
+
                 for (int columnIndex = 0; columnIndex < totalDetempo; columnIndex++)
                 {
-                    if (columnIndex >= processo.InicioProcesso && columnIndex < processo.FimProcosso)
+                    if (columnIndex >= processo.InicioProcesso && columnIndex < processo.FimProcesso)
                     {
                         dgGrafico.Rows[rowIndex].Cells[columnIndex].Value = "##";
                         dgGrafico.Rows[rowIndex].Cells[columnIndex].Style.BackColor = Color.LightGreen;
@@ -248,7 +400,7 @@ namespace Algoritmos
             }
         }
 
-        private void ResetDataGridView()
+        private void ResetDataGridGraficoView()
         {
             var columnTotal = dgGrafico.Columns.Count;
             for (int column = 0; column < columnTotal; column++)
@@ -261,6 +413,44 @@ namespace Algoritmos
             {
                 dgGrafico.Rows.RemoveAt(0);
             }
+        }
+        private void ResetDataGridProcessoView()
+        {
+          
+            var rowwTotal = dtProcesso.Rows.Count;
+            for (int rowIndex = 0; rowIndex < rowwTotal; rowIndex++)
+            {
+                dtProcesso.Rows.RemoveAt(0);
+            }
+        }
+
+        private void ComboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var rrobin = (ComboBox)sender;
+            if(rrobin.SelectedItem == "RRobin")
+            {
+                lQuantum.Visible = true;
+                nQuantum.Visible = true;
+            }
+            if (rrobin.SelectedItem != "RRobin")
+            {
+                lQuantum.Visible = false;
+                nQuantum.Visible = false;
+            }
+
+            btnVisualizarGantt.Visible = true;
+        }
+
+        private void BtnClear_Click(object sender, EventArgs e)
+        {
+            ResetDataGridGraficoView();
+            ResetDataGridProcessoView();
+            nProcesso.Value = 1;
+            lQuantum.Visible = false;
+            nQuantum.Visible = false;
+            btnVisualizarGantt.Visible = false;
+            btnAdicionar.Enabled = true;
+            contexto.LimparProcessos();
         }
     }
 }

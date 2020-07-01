@@ -6,5 +6,7 @@ namespace Algoritmos.Interfaces
     {
         void AdicionarProcesso(Algoritmo fifo);
         ICollection<Algoritmo> BuscarProcessos();
+
+        void LimparProcessos();
     }
 }
